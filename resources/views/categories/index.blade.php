@@ -4,6 +4,15 @@
 <div class="container">
     <h2>Manage Categories</h2>
 
+    {{-- Success & Error Alerts --}}
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <a href="{{ route('categories.create') }}" class="btn btn-primary mb-3">Add New Category</a>
 
     @if($categories->count())
@@ -20,7 +29,7 @@
                 <a href="{{ route('categories.edit', $category) }}" class="btn btn-sm btn-warning">Edit</a>
                 <form action="{{ route('categories.destroy', $category) }}" method="POST" style="display:inline;">
                     @csrf @method('DELETE')
-                    <button class="btn btn-sm btn-danger">Delete</button>
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
                 </form>
             </td>
         </tr>

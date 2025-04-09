@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Database\QueryException;
 
 
 class CategoryController extends Controller
@@ -121,17 +122,17 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-{
-    $category = Category::findOrFail($id);
-
-    if ($category->user_id !== auth()->id()) {
-        abort(403);
+    public function destroy(Category $category)
+    {
+        try {
+            $category->delete();
+            return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('categories.index')->with('error', 'Cannot delete category because it has products assigned.');
+            }
+    
+            return redirect()->route('categories.index')->with('error', 'Something went wrong.');
+        }
     }
-
-    $category->delete();
-
-    return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
-}
-
 }
